@@ -5,8 +5,8 @@
     <script src="modal.js"></script> <!-- Incluir el archivo JS externo -->
     <script>
 
-        // Obtener el payment_token de localStorage (creado con el botón "Crear nuevo payment")
-        const paymentToken = localStorage.getItem('floid_payment_token') || '78f5ed9a-5187-4ceb-a6d6-b9eb83d39e0a';
+        const urlParams = new URLSearchParams(window.parent.location.search);
+        const paymentToken = urlParams.get('id') || '0821b669-40c7-4ee1-9e6e-aa33c2afc3d8';
         const myModal = FloidModal(paymentToken);
         modalInstance.createModal();
         setTimeout(() => {

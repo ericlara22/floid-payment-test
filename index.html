@@ -9,8 +9,6 @@
 
 <body>
     <h1>Cargar Modal Dinámicamente</h1>
-    <button id="createPaymentButton">Crear nuevo payment</button>
-    <span id="paymentStatus" style="margin-left: 10px;"></span>
     <button id="loadPageButton">Cargar Modal</button>
     
     <div id="contentDiv" style="border: 1px solid #000; padding: 10px; height: 500px; overflow-y: auto;">
@@ -18,32 +16,6 @@
     </div>
 
     <script>
-        const PAYMENT_TOKEN_KEY = 'floid_payment_token';
-
-        document.getElementById("createPaymentButton").addEventListener("click", async function () {
-            const statusEl = document.getElementById("paymentStatus");
-            statusEl.textContent = "Creando...";
-            statusEl.style.color = "#666";
-            try {
-                const response = await fetch('/api/create-payment', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ amount: '1', bank: 'banco_estado_personas' })
-                });
-                const data = await response.json();
-                if (!response.ok) {
-                    throw new Error(data.error || data.details?.message || 'Error al crear payment');
-                }
-                const token = data.payment_token || data.id;
-                localStorage.setItem(PAYMENT_TOKEN_KEY, token);
-                statusEl.textContent = "Token guardado ✓";
-                statusEl.style.color = "green";
-            } catch (error) {
-                statusEl.textContent = "Error: " + error.message;
-                statusEl.style.color = "red";
-            }
-        });
-
         document.getElementById("loadPageButton").addEventListener("click", function () {
             const url = "modal.html";  // Cambia esto a la ruta correcta si es necesario
 
