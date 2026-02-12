@@ -130,6 +130,7 @@ class Modal {
 
     addEventListeners() {
         const handleMessage = (event) => {
+            console.log('message received', event);
             if (event.data && event.data.status === 'PAYMENT_CLOSED') {
                 this.close();
             }
