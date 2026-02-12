@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cargar Modal Dinámicamente</title>
+</head>
+
+<body>
+    <h1>Cargar Modal Dinámicamente</h1>
+    <button id="loadPageButton">Cargar Modal</button>
+    <div id="contentDiv" style="border: 1px solid #000; padding: 10px; height: 500px; overflow-y: auto;">
+        <!-- Aquí se cargará el contenido del modal -->
+    </div>
+
+    <script>
+        document.getElementById("loadPageButton").addEventListener("click", function () {
+            const url = "modal.html";  // Cambia esto a la ruta correcta si es necesario
+
+            fetch(url)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Error al cargar el archivo modal.html: ' + response.statusText);
+                    }
+                    return response.text();
+                })
+                .then(data => {
+                    // Insertar el contenido HTML en el div
+                    document.getElementById("contentDiv").innerHTML = data;
+
+                    // Buscar y ejecutar scripts dentro del contenido cargado
+                    const scripts = document.getElementById("contentDiv").querySelectorAll("script");
+
+                    let externalScriptLoaded = Promise.resolve();  // Inicializa con una promesa resuelta
+
+                    scripts.forEach(script => {
+                        const newScript = document.createElement("script");
+                        if (script.src) {
+                            // Si es un script con src (archivo externo)
+                            newScript.src = script.src;
+
+                            // Crea una promesa que espera a que se cargue el script externo
+                            externalScriptLoaded = new Promise((resolve, reject) => {
+                                newScript.onload = resolve;
+                                newScript.onerror = reject;
+                            });
+                        } else {
+                            // Si es un script inline, espera a que el externo (si existe) se cargue antes de ejecutarlo
+                            externalScriptLoaded.then(() => {
+                                newScript.textContent = script.textContent;
+                                document.body.appendChild(newScript);
+                            });
+                        }
+
+                        // Agregar el script al DOM (solo los externos de inmediato)
+                        if (script.src) {
+                            document.body.appendChild(newScript);
+                        }
+                    });
+
+                })
+                .catch(error => {
+                    console.error('Error al cargar la página:', error);
+                    document.getElementById("contentDiv").innerHTML = '<p>Error al cargar el contenido.</p>';
+                });
+        });
+    </script>
+</body>
+
+</html>

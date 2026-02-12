@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cargar Página Dinámicamente</title>
+</head>
+
+<body>
+    <h1>Cargar una página dentro de otra dinámicamente</h1>
+    <button id="loadPageButton">Cargar Página</button>
+    <iframe id="contentFrame" style="width: 100%; height: 500px; border: 1px solid #000;"></iframe>
+
+    <!-- Bloque de JavaScript -->
+    <script>
+        document.getElementById("loadPageButton").addEventListener("click", function () {
+            // URL de la página que deseas cargar
+            const url = "modal.html";  // Cambia esto por la URL que necesites cargar
+
+            // Referencia al iframe donde cargaremos la página
+            const iframe = document.getElementById("contentFrame");
+
+            // Asignar la URL al iframe para cargar la página
+            iframe.src = url;
+        });
+
+    </script>
+</body>
+
+</html>
