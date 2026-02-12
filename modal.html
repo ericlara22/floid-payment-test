@@ -5,8 +5,9 @@
     <script src="modal.js"></script> <!-- Incluir el archivo JS externo -->
     <script>
 
-        const urlParams = new URLSearchParams(window.parent.location.search);
-        const paymentToken = urlParams.get('id') || '0821b669-40c7-4ee1-9e6e-aa33c2afc3d8';
+        const urlParams = new URLSearchParams(window.location.search);
+        const parentParams = new URLSearchParams(window.parent !== window ? (window.parent.location.search || '') : '');
+        const paymentToken = urlParams.get('id') || parentParams.get('id') || '0821b669-40c7-4ee1-9e6e-aa33c2afc3d8';
         const myModal = FloidModal(paymentToken);
         modalInstance.createModal();
         setTimeout(() => {
