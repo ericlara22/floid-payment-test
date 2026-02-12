@@ -1,64 +1,43 @@
 class Modal {
     constructor() {
-        this.eventCallbacks = {};
+        this.eventCallbacks = {}; // Object to store callbacks for events
     }
 
-    addStyles(targetDoc) {
+    addStyles() {
         const styles = `
-            #myModal {
-                display: flex;
+            .modal {
+                display: none;
                 position: fixed;
-                z-index: 2147483647;
+                z-index: 10000;
                 left: 0;
                 top: 0;
-                right: 0;
-                bottom: 0;
                 width: 100%;
                 height: 100%;
-                min-height: 100dvh;
-                min-height: -webkit-fill-available;
                 overflow: auto;
-                -webkit-overflow-scrolling: touch;
-                background-color: rgba(0,0,0,0.5);
+                background-color: rgb(0,0,0);
+                background-color: rgba(0,0,0,0.4);
                 justify-content: center;
                 align-items: center;
-                animation: modalFadeIn 0.25s ease;
             }
-            @keyframes modalFadeIn {
-                from { opacity: 0; }
-                to { opacity: 1; }
-            }
-            #myModal .modal-content {
+            .modal-content {
                 position: relative;
-                background-color: #fff;
-                margin: 16px;
+                background-color: #FEFEFE;
+                margin: auto;
                 padding: 0;
-                border-radius: 16px;
-                width: 100%;
-                max-width: 430px;
-                max-height: calc(100dvh - 32px);
-                max-height: calc(100vh - 32px);
-                box-shadow: 0 24px 48px rgba(0,0,0,0.2);
-                animation: modalSlideIn 0.3s ease;
+                border: 1px solid #888;
+                width: 430px;
+                max-width: 600px;
             }
-            @keyframes modalSlideIn {
-                from { opacity: 0; transform: scale(0.95) translateY(-10px); }
-                to { opacity: 1; transform: scale(1) translateY(0); }
-            }
-            #myModal iframe {
+            iframe {
                 width: 100%;
                 height: 750px;
-                max-height: calc(100dvh - 32px);
-                max-height: calc(100vh - 32px);
                 border: none;
-                border-radius: 0 0 16px 16px;
             }
         `;
         const styleSheet = document.createElement('style');
         styleSheet.type = 'text/css';
         styleSheet.innerText = styles;
-        styleSheet.id = 'floid-modal-styles';
-        targetDoc.head.appendChild(styleSheet);
+        document.head.appendChild(styleSheet);
     }
 
     createModal() {
@@ -67,35 +46,30 @@ class Modal {
 
     open(token) {
         try {
-            const targetDoc = document;
-            const targetBody = targetDoc.body;
-
-            // Bloquear scroll del body
-            const scrollY = window.scrollY;
-            targetBody.style.overflow = 'hidden';
-            targetBody.style.position = 'fixed';
-            targetBody.style.top = `-${scrollY}px`;
-            targetBody.style.left = '0';
-            targetBody.style.right = '0';
-
-            this.modal = targetDoc.createElement('div');
-            this.modalContent = targetDoc.createElement('div');
-            this.iframe = targetDoc.createElement('iframe');
+            // Create modal elements
+            this.modal = document.createElement('div');
+            this.modalContent = document.createElement('div');
+            this.iframe = document.createElement('iframe');
+            // Set modal attributes
             this.modal.setAttribute('id', 'myModal');
             this.modal.setAttribute('class', 'modal');
             this.modalContent.setAttribute('class', 'modal-content');
             this.iframe.setAttribute('id', 'modalIframe');
             this.iframe.setAttribute('src', '');
 
+            // Build the URL using the token
             this.iframe.src = `https://payments.floid.app/?id=${token}`;
 
+            // Append elements
             this.modalContent.appendChild(this.iframe);
             this.modal.appendChild(this.modalContent);
-            targetBody.appendChild(this.modal);
+            document.body.appendChild(this.modal);
+            // Add CSS styles
+            this.addStyles();
 
-            this.addStyles(targetDoc);
-            this.addEventListeners();
+            this.addEventListeners(); // Added to handle iframe events
 
+            this.modal.style.zIndex = '100000';
             this.modal.style.display = 'flex';
         } catch (error) {
             throw new Error('No se pudo iniciar el pago');
@@ -103,46 +77,22 @@ class Modal {
     }
 
     close() {
-        if (this.modal) {
-            this.modal.style.display = 'none';
-            this.iframe.src = '';
-            this.modal.remove();
-
-            const targetBody = document.body;
-            const scrollY = targetBody.style.top;
-            targetBody.style.overflow = '';
-            targetBody.style.position = '';
-            targetBody.style.top = '';
-            targetBody.style.left = '';
-            targetBody.style.right = '';
-            if (scrollY) {
-                window.scrollTo(0, parseInt(scrollY || '0') * -1);
-            }
-
-            const styles = document.getElementById('floid-modal-styles');
-            if (styles) styles.remove();
-        }
-        if (this._messageTarget && this._messageHandler) {
-            this._messageTarget.removeEventListener('message', this._messageHandler);
-        }
-        this.trigger('close');
+        this.modal.style.display = 'none';
+        this.iframe.src = '';
+        this.trigger('close'); // Trigger the close event
     }
 
     addEventListeners() {
-        const handleMessage = (event) => {
-            console.log('message received', event);
-            if (event.data && event.data.status === 'PAYMENT_CLOSED') {
-                this.close();
-            }
+        window.addEventListener('message', (event) => {
+            console.log('Received message:', event.data, 'from:', event.origin);
+            // Execute callbacks associated with the received event
             if (this.eventCallbacks[event.data]) {
                 this.eventCallbacks[event.data].forEach(callback => callback(event));
             }
-        };
-        window.addEventListener('message', handleMessage);
-        this._messageHandler = handleMessage;
-        this._messageTarget = window;
+        });
     }
 
+    // Method to add callbacks for specific events
     on(event, callback) {
         if (!this.eventCallbacks[event]) {
             this.eventCallbacks[event] = [];
@@ -150,15 +100,16 @@ class Modal {
         this.eventCallbacks[event].push(callback);
     }
 
+    // Method to trigger events
     trigger(event) {
         if (this.eventCallbacks[event]) {
             this.eventCallbacks[event].forEach(callback => callback());
         }
     }
 }
-
+// Create an instance of Modal
 const modalInstance = new Modal();
-
+// Function that returns an object similar to jQuery AJAX calls
 function FloidModal(token) {
     return {
         open: () => modalInstance.open(token),
@@ -166,5 +117,5 @@ function FloidModal(token) {
         close: () => modalInstance.close()
     };
 }
-
+// Export the function globally
 window.FloidModal = FloidModal;
