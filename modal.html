@@ -6,27 +6,19 @@
     <script>
 
         const urlParams = new URLSearchParams(window.location.search);
-        const parentParams = new URLSearchParams(window.parent !== window ? (window.parent.location.search || '') : '');
-        const paymentToken = urlParams.get('id') || parentParams.get('id') || '0821b669-40c7-4ee1-9e6e-aa33c2afc3d8';
+        const paymentToken = window.__FLOID_PAYMENT_TOKEN__ || urlParams.get('id') || '0821b669-40c7-4ee1-9e6e-aa33c2afc3d8';
         const myModal = FloidModal(paymentToken);
         modalInstance.createModal();
         setTimeout(() => {
             myModal.open();
         }, 100)
 
-        // Registrar un event listener para el evento 'PAYMENT_CLOSED'
         window.addEventListener('message', (event) => {
             if (event.data && event.data.status === 'PAYMENT_CLOSED') {
                 myModal.close();
                 console.log('modal cerrado');
             }
         });
-
-        console.log("evento recibido", event);
-        if (event.data && event.data.status === 'PAYMENT_CLOSED') {
-            myModal.close();
-            console.log('modal cerrado');
-        }
 
     </script>
 </head>

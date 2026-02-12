@@ -1,6 +1,6 @@
 class Modal {
     constructor() {
-        this.eventCallbacks = {}; // Object to store callbacks for events
+        this.eventCallbacks = {};
     }
 
     addStyles(targetDoc) {
@@ -11,9 +11,14 @@ class Modal {
                 z-index: 2147483647;
                 left: 0;
                 top: 0;
+                right: 0;
+                bottom: 0;
                 width: 100%;
                 height: 100%;
+                min-height: 100dvh;
+                min-height: -webkit-fill-available;
                 overflow: auto;
+                -webkit-overflow-scrolling: touch;
                 background-color: rgba(0,0,0,0.5);
                 justify-content: center;
                 align-items: center;
@@ -31,6 +36,7 @@ class Modal {
                 border-radius: 16px;
                 width: 100%;
                 max-width: 430px;
+                max-height: calc(100dvh - 32px);
                 max-height: calc(100vh - 32px);
                 box-shadow: 0 24px 48px rgba(0,0,0,0.2);
                 animation: modalSlideIn 0.3s ease;
@@ -42,6 +48,7 @@ class Modal {
             #myModal iframe {
                 width: 100%;
                 height: 750px;
+                max-height: calc(100dvh - 32px);
                 max-height: calc(100vh - 32px);
                 border: none;
                 border-radius: 0 0 16px 16px;
@@ -60,10 +67,17 @@ class Modal {
 
     open(token) {
         try {
-            const targetDoc = (window.parent !== window) ? window.parent.document : document;
+            const targetDoc = document;
             const targetBody = targetDoc.body;
 
-            // Create modal elements
+            // Bloquear scroll del body
+            const scrollY = window.scrollY;
+            targetBody.style.overflow = 'hidden';
+            targetBody.style.position = 'fixed';
+            targetBody.style.top = `-${scrollY}px`;
+            targetBody.style.left = '0';
+            targetBody.style.right = '0';
+
             this.modal = targetDoc.createElement('div');
             this.modalContent = targetDoc.createElement('div');
             this.iframe = targetDoc.createElement('iframe');
@@ -93,8 +107,19 @@ class Modal {
             this.modal.style.display = 'none';
             this.iframe.src = '';
             this.modal.remove();
-            const targetDoc = (window.parent !== window) ? window.parent.document : document;
-            const styles = targetDoc.getElementById('floid-modal-styles');
+
+            const targetBody = document.body;
+            const scrollY = targetBody.style.top;
+            targetBody.style.overflow = '';
+            targetBody.style.position = '';
+            targetBody.style.top = '';
+            targetBody.style.left = '';
+            targetBody.style.right = '';
+            if (scrollY) {
+                window.scrollTo(0, parseInt(scrollY || '0') * -1);
+            }
+
+            const styles = document.getElementById('floid-modal-styles');
             if (styles) styles.remove();
         }
         if (this._messageTarget && this._messageHandler) {
@@ -104,7 +129,6 @@ class Modal {
     }
 
     addEventListeners() {
-        const targetWindow = (window.parent !== window) ? window.parent : window;
         const handleMessage = (event) => {
             if (event.data && event.data.status === 'PAYMENT_CLOSED') {
                 this.close();
@@ -113,12 +137,11 @@ class Modal {
                 this.eventCallbacks[event.data].forEach(callback => callback(event));
             }
         };
-        targetWindow.addEventListener('message', handleMessage);
+        window.addEventListener('message', handleMessage);
         this._messageHandler = handleMessage;
-        this._messageTarget = targetWindow;
+        this._messageTarget = window;
     }
 
-    // Method to add callbacks for specific events
     on(event, callback) {
         if (!this.eventCallbacks[event]) {
             this.eventCallbacks[event] = [];
@@ -126,16 +149,15 @@ class Modal {
         this.eventCallbacks[event].push(callback);
     }
 
-    // Method to trigger events
     trigger(event) {
         if (this.eventCallbacks[event]) {
             this.eventCallbacks[event].forEach(callback => callback());
         }
     }
 }
-// Create an instance of Modal
+
 const modalInstance = new Modal();
-// Function that returns an object similar to jQuery AJAX calls
+
 function FloidModal(token) {
     return {
         open: () => modalInstance.open(token),
@@ -143,5 +165,5 @@ function FloidModal(token) {
         close: () => modalInstance.close()
     };
 }
-// Export the function globally
+
 window.FloidModal = FloidModal;

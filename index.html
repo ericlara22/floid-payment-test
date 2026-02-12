@@ -127,10 +127,8 @@
             transform: scale(0.99);
         }
 
-        #contentFrame {
-            display: none;
-        }
     </style>
+    <script src="modal.js"></script>
 </head>
 
 <body>
@@ -148,13 +146,11 @@
             </form>
         </div>
 
-        <iframe id="contentFrame" title="Modal de pago"></iframe>
     </div>
 
     <script>
         const form = document.getElementById("paymentForm");
         const paymentTokenInput = document.getElementById("paymentToken");
-        const contentFrame = document.getElementById("contentFrame");
 
         form.addEventListener("submit", function (e) {
             e.preventDefault();
@@ -163,15 +159,8 @@
                 paymentTokenInput.focus();
                 return;
             }
-            contentFrame.style.display = "none";
-            contentFrame.src = "modal.html?id=" + encodeURIComponent(token);
-        });
-
-        window.addEventListener("message", function (e) {
-            if (e.data && e.data.status === "PAYMENT_CLOSED") {
-                contentFrame.style.display = "none";
-                contentFrame.src = "";
-            }
+            const myModal = FloidModal(token);
+            myModal.open();
         });
     </script>
 </body>
