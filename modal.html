@@ -5,8 +5,9 @@
     <script src="modal.js"></script> <!-- Incluir el archivo JS externo -->
     <script>
 
-        // Crear una nueva instancia del modal con un payment-token
-        const myModal = FloidModal('f4fb73f6-fe74-4b76-ad9f-69a4884f8c83');
+        // Obtener el payment_token de localStorage (creado con el botón "Crear nuevo payment")
+        const paymentToken = localStorage.getItem('floid_payment_token') || '78f5ed9a-5187-4ceb-a6d6-b9eb83d39e0a';
+        const myModal = FloidModal(paymentToken);
         modalInstance.createModal();
         setTimeout(() => {
             myModal.open();
@@ -19,6 +20,12 @@
                 console.log('modal cerrado');
             }
         });
+
+        console.log("evento recibido", event);
+        if (event.data && event.data.status === 'PAYMENT_CLOSED') {
+            myModal.close();
+            console.log('modal cerrado');
+        }
 
     </script>
 </head>
