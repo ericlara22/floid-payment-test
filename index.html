@@ -173,7 +173,8 @@
         });
 
         document.getElementById("testButton").addEventListener("click", function () {
-            window.open("innerHtml.html", "test", "width=430,height=750,scrollbars=yes,resizable=yes");
+            const myModal = FloidModal(null, "innerHtml.html");
+            myModal.open();
         });
     </script>
 </body>
