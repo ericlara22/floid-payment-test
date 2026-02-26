@@ -44,7 +44,7 @@ class Modal {
         return;
     }
 
-    open(token) {
+    open(token, customUrl) {
         try {
             // Create modal elements
             this.modal = document.createElement('div');
@@ -57,8 +57,8 @@ class Modal {
             this.iframe.setAttribute('id', 'modalIframe');
             this.iframe.setAttribute('src', '');
 
-            // Build the URL using the token
-            this.iframe.src = `https://payments.floid.app/?id=${token}`;
+            // Use custom URL or build the URL using the token
+            this.iframe.src = customUrl || `https://payments.floid.app/?id=${token}`;
 
             // Append elements
             this.modalContent.appendChild(this.iframe);
@@ -110,9 +110,9 @@ class Modal {
 // Create an instance of Modal
 const modalInstance = new Modal();
 // Function that returns an object similar to jQuery AJAX calls
-function FloidModal(token) {
+function FloidModal(token, customUrl) {
     return {
-        open: () => modalInstance.open(token),
+        open: () => modalInstance.open(token, customUrl),
         on: (event, callback) => modalInstance.on(event, callback),
         close: () => modalInstance.close()
     };

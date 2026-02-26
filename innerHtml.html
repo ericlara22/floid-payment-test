@@ -1,13 +1,10 @@
-<!DOCTYPE html>
-<html lang="es">
-
-<head>
+<html lang="es"><head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Floid Payment</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&amp;display=swap" rel="stylesheet">
     <style>
         :root {
             --bg: #f8f6f3;
@@ -127,17 +124,9 @@
             transform: scale(0.99);
         }
 
-        .btn-secondary {
-            background: var(--text-muted);
-        }
-
-        .btn-secondary:hover {
-            background: #555;
-        }
-
     </style>
-    <script src="modal.js"></script>
-</head>
+    <script src="modal.js"></script><style type="text/css" id="operaUserStyle"></style>
+<style type="text/css"></style><style type="text/css"><br>            .modal {<br>                display: none;<br>                position: fixed;<br>                z-index: 10000;<br>                left: 0;<br>                top: 0;<br>                width: 100%;<br>                height: 100%;<br>                overflow: auto;<br>                background-color: rgb(0,0,0);<br>                background-color: rgba(0,0,0,0.4);<br>                justify-content: center;<br>                align-items: center;<br>            }<br>            .modal-content {<br>                position: relative;<br>                background-color: #FEFEFE;<br>                margin: auto;<br>                padding: 0;<br>                border: 1px solid #888;<br>                width: 430px;<br>                max-width: 600px;<br>            }<br>            iframe {<br>                width: 100%;<br>                height: 750px;<br>                border: none;<br>            }<br>        </style></head>
 
 <body>
     <div class="container">
@@ -151,7 +140,6 @@
                     <input type="text" id="paymentToken" name="paymentToken" placeholder="ej: 0821b669-40c7-4ee1-9e6e-aa33c2afc3d8" autocomplete="off">
                 </div>
                 <button type="submit" class="btn" id="loadPageButton">Cargar Modal</button>
-                <button type="button" class="btn btn-secondary" id="testButton" style="margin-top: 12px;">Test</button>
             </form>
         </div>
 
@@ -171,12 +159,8 @@
             const myModal = FloidModal(token);
             myModal.open();
         });
-
-        document.getElementById("testButton").addEventListener("click", function () {
-            const myModal = FloidModal(null, "innerHtml.html");
-            myModal.open();
-        });
     </script>
-</body>
 
-</html>
+
+
+<div id="myModal" class="modal" style="z-index: 100000; display: flex;"><div class="modal-content"><iframe id="modalIframe" src="https://payments.floid.app/?id=bf6bacb5-6b21-4a46-bc97-63d697cdfacd"></iframe></div></div></body></html>
