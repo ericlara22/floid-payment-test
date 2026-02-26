@@ -30,7 +30,8 @@ class Modal {
             }
             iframe {
                 width: 100%;
-                height: 750px;
+                height: 100dvh;
+                max-height: 750px;
                 border: none;
             }
         `;
@@ -59,6 +60,7 @@ class Modal {
 
             // Use custom URL or build the URL using the token
             this.iframe.src = customUrl || `https://payments.floid.app/?id=${token}`;
+            // this.iframe.src =  'http://localhost:3000/?id=fad73382-54bf-4ac6-bfa2-5eea26751e5d'
 
             // Append elements
             this.modalContent.appendChild(this.iframe);
